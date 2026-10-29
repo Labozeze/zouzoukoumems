@@ -362,26 +362,94 @@
     .btn-sm-teal:hover { background: var(--primary-d); }
 
     /* ─── Process ─── */
-    #process { background: var(--white); }
-    .steps {
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      gap: 12px; position: relative;
+    #process { background: var(--bg); }
+    /* 3 phases (Vous imaginez / Nous créons / Vous recevez) regroupant les 7 étapes */
+    .phases {
+      list-style: none; display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 32px; counter-reset: none;
     }
-    .step { text-align: center; position: relative; }
-    .step-num {
-      width: 52px; height: 52px; border-radius: 50%; margin: 0 auto 14px;
-      background: linear-gradient(135deg, var(--primary), var(--primary-l));
-      color: var(--white); font-family:'Playfair Display',serif; font-size:1.2rem; font-weight:700;
-      display: flex; align-items: center; justify-content: center; position: relative; z-index: 1;
+    .phase {
+      position: relative; background: var(--white); border-radius: var(--radius);
+      box-shadow: var(--shadow); padding: 28px 26px 26px;
+      border-top: 4px solid var(--primary);
     }
-    .step:not(:last-child)::after {
-      content:''; position:absolute; top:26px; left:calc(50% + 26px);
-      width:calc(100% - 52px); height:2px;
-      background: linear-gradient(90deg, var(--primary), rgba(184,80,66,.15));
+    .phase:nth-child(2) { transition-delay: .05s; }
+    .phase:nth-child(3) { transition-delay: .1s; }
+    /* Flèche de liaison entre les phases */
+    .phase:not(:last-child)::after {
+      content: '\f054'; font-family: 'Font Awesome 6 Free'; font-weight: 900;
+      position: absolute; top: 50%; right: -27px; transform: translateY(-50%);
+      width: 22px; height: 22px; border-radius: 50%; z-index: 1;
+      background: var(--primary); color: var(--white); font-size: .6rem;
+      display: flex; align-items: center; justify-content: center;
     }
-    .step h4 { font-size: .82rem; font-weight: 600; color: var(--text); margin-bottom: 6px; }
-    .step p  { font-size: .75rem; color: var(--muted); line-height: 1.5; }
+    .phase-dark {
+      background: linear-gradient(145deg, var(--dark), #5C2318);
+      border-top-color: var(--primary-l);
+    }
+    .phase-head { display: flex; align-items: center; gap: 14px; margin-bottom: 22px; }
+    .phase-icon {
+      flex: none; width: 48px; height: 48px; border-radius: 14px;
+      background: rgba(184,80,66,.1); color: var(--primary);
+      display: flex; align-items: center; justify-content: center; font-size: 1.2rem;
+    }
+    .phase-dark .phase-icon { background: rgba(255,255,255,.1); color: var(--primary-l); }
+    .phase-label {
+      display: block; font-size: .78rem; font-weight: 600; letter-spacing: .08em;
+      text-transform: uppercase; color: var(--primary-d);
+    }
+    .phase-dark .phase-label { color: var(--primary-l); }
+    .phase-head h3 {
+      font-family: 'Playfair Display', serif; font-size: 1.45rem; color: var(--text);
+    }
+    .phase-dark h3, .phase-dark .pstep h4 { color: var(--white); }
+
+    /* Étapes d'une phase : mini-frise verticale */
+    .phase-steps { list-style: none; display: flex; flex-direction: column; gap: 18px; }
+    .pstep { display: flex; gap: 14px; position: relative; }
+    .pstep:not(:last-child)::before {
+      content: ''; position: absolute; left: 17px; top: 38px; bottom: -16px; width: 2px;
+      background: rgba(184,80,66,.2);
+    }
+    .pstep-num {
+      flex: none; width: 36px; height: 36px; border-radius: 50%;
+      background: var(--primary-d); color: var(--white);
+      font-weight: 700; font-size: .95rem; font-variant-numeric: tabular-nums;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .phase-dark .pstep-num { background: var(--primary-l); color: var(--dark); }
+    .pstep h4 { font-size: 1rem; font-weight: 600; color: var(--text); margin: 6px 0 4px; }
+    .pstep p  { font-size: .95rem; color: var(--muted); line-height: 1.6; }
+    .phase-dark .pstep p { color: rgba(255,255,255,.78); }
+    .pstep a { color: var(--primary-d); font-weight: 600; white-space: nowrap; text-decoration: underline; text-underline-offset: 3px; }
+    .pstep-tag {
+      display: inline-flex; align-items: center; gap: 6px; margin-top: 8px;
+      padding: 3px 10px; border-radius: 999px; font-size: .78rem; font-weight: 600;
+      background: rgba(184,80,66,.1); color: var(--primary-d);
+    }
+    .phase-dark .pstep-tag { background: rgba(255,255,255,.12); color: var(--white); }
+
+    /* Appel à l'action en fin de section */
+    .process-cta {
+      margin-top: 44px; display: flex; align-items: center; justify-content: center;
+      gap: 18px; flex-wrap: wrap; text-align: center;
+    }
+    .process-cta p { font-size: 1.05rem; color: var(--text); font-weight: 500; }
+    .btn-process {
+      display: inline-flex; align-items: center; gap: 10px; min-height: 48px;
+      padding: 12px 28px; border-radius: 999px; cursor: pointer;
+      background: var(--primary-d); color: var(--white); font-weight: 600;
+      box-shadow: 0 6px 20px rgba(154,56,48,.3);
+      transition: transform .2s ease, box-shadow .2s ease, background .2s ease;
+    }
+    .btn-process:hover { background: var(--dark-2); transform: translateY(-2px); box-shadow: 0 10px 28px rgba(154,56,48,.38); }
+    .btn-process:active { transform: scale(.97); }
+    .btn-process:focus-visible, .pstep a:focus-visible { outline: 3px solid var(--primary-l); outline-offset: 3px; }
+
+    @media (prefers-reduced-motion: reduce) {
+      #process .fade { opacity: 1; transform: none; transition: none; }
+      .btn-process { transition: none; }
+    }
 
     /* ─── Why us ─── */
     #why { background: linear-gradient(140deg, var(--dark) 0%, #4A1C10 100%); position: relative; overflow: hidden; }
@@ -523,9 +591,11 @@
     @keyframes wapulse { 0%,100%{box-shadow:0 4px 22px rgba(37,211,102,.42);} 50%{box-shadow:0 4px 32px rgba(37,211,102,.72);} }
 
     /* ─── Responsive ─── */
-    @media(max-width:1024px) {
-      .steps { grid-template-columns: repeat(4, 1fr); }
-      .step:nth-child(4)::after { display:none; }
+    @media(max-width:900px) {
+      .phases { grid-template-columns: 1fr; gap: 28px; max-width: 560px; margin: 0 auto; }
+      .phase:not(:last-child)::after {
+        content: '\f078'; top: auto; bottom: -25px; right: 50%; transform: translateX(50%);
+      }
     }
     @media(max-width:900px) {
       .hero-grid, .about-grid { grid-template-columns: 1fr; text-align: center; gap:40px; }
@@ -549,8 +619,8 @@
       .hamburger { display:flex; }
     }
     @media(max-width:768px) {
-      .steps { grid-template-columns: repeat(2, 1fr); }
-      .step::after { display:none !important; }
+      .phase { padding: 24px 20px 22px; }
+      .pstep p { font-size: 1rem; }
       section { padding:60px 20px; }
       .cta-box { padding:48px 24px; }
     }
@@ -815,42 +885,100 @@
       <h2 class="section-title">Commander en 7 étapes simples</h2>
       <p class="section-sub">Un processus fluide et transparent, pensé pour votre tranquillité d'esprit de A à Z.</p>
     </div>
-    <div class="steps fade">
-      <div class="step">
-        <div class="step-num">1</div>
-        <h4>Photo &amp; Idée</h4>
-        <p>Choisissez votre souvenir à immortaliser</p>
-      </div>
-      <div class="step">
-        <div class="step-num">2</div>
-        <h4>Contactez-nous</h4>
-        <p>Via WhatsApp au 0747081151</p>
-      </div>
-      <div class="step">
-        <div class="step-num">3</div>
-        <h4>Validation</h4>
-        <p>Taille, quantité et design ensemble</p>
-      </div>
-      <div class="step">
-        <div class="step-num">4</div>
-        <h4>Acompte</h4>
-        <p>Paiement d'un acompte ou solde total</p>
-      </div>
-      <div class="step">
-        <div class="step-num">5</div>
-        <h4>Fabrication</h4>
-        <p>Création soignée de vos magnets</p>
-      </div>
-      <div class="step">
-        <div class="step-num">6</div>
-        <h4>Solde</h4>
-        <p>Règlement du reste de la commande</p>
-      </div>
-      <div class="step">
-        <div class="step-num">7</div>
-        <h4>Livraison</h4>
-        <p>Vos magnets arrivent chez vous</p>
-      </div>
+    <ol class="phases">
+      <li class="phase fade">
+        <div class="phase-head">
+          <span class="phase-icon"><i class="fas fa-lightbulb" aria-hidden="true"></i></span>
+          <div>
+            <span class="phase-label">Étapes 1 à 3</span>
+            <h3>Vous imaginez</h3>
+          </div>
+        </div>
+        <ol class="phase-steps">
+          <li class="pstep">
+            <span class="pstep-num">1</span>
+            <div>
+              <h4>Photo &amp; idée</h4>
+              <p>Choisissez le souvenir à immortaliser.</p>
+            </div>
+          </li>
+          <li class="pstep">
+            <span class="pstep-num">2</span>
+            <div>
+              <h4>Contactez-nous</h4>
+              <p>Sur WhatsApp au <a href="https://wa.me/2250747081151" target="_blank" rel="noopener">07 47 08 11 51</a>.</p>
+            </div>
+          </li>
+          <li class="pstep">
+            <span class="pstep-num">3</span>
+            <div>
+              <h4>Validation</h4>
+              <p>Taille, quantité et design, définis ensemble.</p>
+            </div>
+          </li>
+        </ol>
+      </li>
+
+      <li class="phase phase-dark fade">
+        <div class="phase-head">
+          <span class="phase-icon"><i class="fas fa-hammer" aria-hidden="true"></i></span>
+          <div>
+            <span class="phase-label">Étapes 4 et 5</span>
+            <h3>Nous créons</h3>
+          </div>
+        </div>
+        <ol class="phase-steps">
+          <li class="pstep">
+            <span class="pstep-num">4</span>
+            <div>
+              <h4>Acompte</h4>
+              <p>Un acompte, ou le paiement total si vous préférez.</p>
+              <span class="pstep-tag"><i class="fas fa-wallet" aria-hidden="true"></i> Paiement</span>
+            </div>
+          </li>
+          <li class="pstep">
+            <span class="pstep-num">5</span>
+            <div>
+              <h4>Fabrication</h4>
+              <p>Vos magnets sont fabriqués avec soin, à la main.</p>
+            </div>
+          </li>
+        </ol>
+      </li>
+
+      <li class="phase fade">
+        <div class="phase-head">
+          <span class="phase-icon"><i class="fas fa-gift" aria-hidden="true"></i></span>
+          <div>
+            <span class="phase-label">Étapes 6 et 7</span>
+            <h3>Vous recevez</h3>
+          </div>
+        </div>
+        <ol class="phase-steps">
+          <li class="pstep">
+            <span class="pstep-num">6</span>
+            <div>
+              <h4>Solde</h4>
+              <p>Règlement du reste de la commande.</p>
+              <span class="pstep-tag"><i class="fas fa-wallet" aria-hidden="true"></i> Paiement</span>
+            </div>
+          </li>
+          <li class="pstep">
+            <span class="pstep-num">7</span>
+            <div>
+              <h4>Livraison</h4>
+              <p>Vos magnets arrivent chez vous.</p>
+            </div>
+          </li>
+        </ol>
+      </li>
+    </ol>
+
+    <div class="process-cta fade">
+      <p>Prêt à immortaliser votre souvenir ?</p>
+      <a class="btn-process" href="https://wa.me/2250747081151?text=Bonjour%20Zouzoukou%20Mem's%2C%20je%20souhaite%20commander%20des%20magnets." target="_blank" rel="noopener">
+        <i class="fab fa-whatsapp" aria-hidden="true"></i> Démarrer ma commande
+      </a>
     </div>
   </div>
 </section>
