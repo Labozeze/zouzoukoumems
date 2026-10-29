@@ -189,8 +189,11 @@
 
     /* ─── Hero ─── */
     #hero {
-      min-height: 100vh; padding: 100px 28px 60px;
-      background: linear-gradient(140deg, var(--dark) 0%, #3E1A10 55%, #5C2318 100%);
+      min-height: 100vh; min-height: 100svh; padding: 110px 28px 70px;
+      /* Points discrets, en écho aux points du masque */
+      background:
+        radial-gradient(rgba(255,255,255,.07) 1.2px, transparent 1.4px) 0 0 / 26px 26px,
+        linear-gradient(140deg, var(--dark) 0%, #3E1A10 55%, #5C2318 100%);
       display: flex; align-items: center; position: relative; overflow: hidden;
     }
     #hero::before {
@@ -205,8 +208,11 @@
     }
     .hero-grid {
       max-width: 1200px; margin: 0 auto; position: relative; z-index: 1;
-      display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center;
+      display: grid; grid-template-columns: 1.05fr .95fr; gap: 56px; align-items: center;
     }
+    /* Entrée échelonnée du texte (une seule fois, au chargement) */
+    .hero-reveal { animation: heroIn .7s cubic-bezier(.2,.7,.2,1) both; animation-delay: calc(var(--i, 0) * 70ms + 80ms); }
+    @keyframes heroIn { from { opacity: 0; transform: translateY(18px); } }
     .hero-badge {
       display: inline-flex; align-items: center; gap: 8px;
       background: rgba(184,80,66,.2); border: 1px solid rgba(184,80,66,.4);
@@ -218,8 +224,17 @@
       font-size: clamp(2.2rem, 5vw, 3.8rem);
       color: var(--white); margin-bottom: 18px;
     }
-    .hero-title em { color: var(--primary-l); font-style: normal; }
-    .hero-sub { font-size: 1.05rem; color: rgba(255,255,255,.72); max-width: 480px; margin-bottom: 38px; line-height: 1.75; }
+    .hero-title em { color: var(--primary-l); font-style: normal; position: relative; display: inline-block; }
+    /* Trait qui se dessine sous « immortalisés » */
+    .hero-title em::after {
+      content: ''; position: absolute; left: 0; right: 0; bottom: .02em; height: .1em;
+      border-radius: 99px; background: linear-gradient(90deg, var(--primary-l), rgba(201,115,74,.25));
+      transform: scaleX(0); transform-origin: left;
+      animation: drawLine .9s cubic-bezier(.6,.1,.2,1) .75s forwards;
+    }
+    @keyframes drawLine { to { transform: scaleX(1); } }
+    .hero-sub { font-size: 1.05rem; color: rgba(255,255,255,.78); max-width: 480px; margin-bottom: 38px; line-height: 1.75; }
+    .hero-sub strong { color: var(--primary-l); }
     .hero-btns { display: flex; gap: 14px; flex-wrap: wrap; }
     .btn { display: inline-flex; align-items: center; gap: 10px; padding: 15px 30px; border-radius: 50px; font-weight: 600; font-size: .95rem; transition: all var(--transition); cursor: pointer; border: none; font-family: inherit; }
     .btn-teal { background: var(--primary); color: var(--white); box-shadow: 0 4px 18px rgba(184,80,66,.45); }
@@ -228,27 +243,114 @@
     .btn-outline:hover { background: rgba(255,255,255,.1); border-color: rgba(255,255,255,.8); transform: translateY(-3px); }
     .hero-stats { display: flex; gap: 36px; margin-top: 44px; padding-top: 28px; border-top: 1px solid rgba(255,255,255,.13); }
     .stat-num { font-family: 'Playfair Display', serif; font-size: 1.9rem; color: var(--primary-l); font-weight: 700; line-height: 1; }
-    .stat-lbl { font-size: .75rem; color: rgba(255,255,255,.55); margin-top: 4px; }
+    .stat-lbl { font-size: .8rem; color: rgba(255,255,255,.65); margin-top: 6px; }
+    .stat-stars { display: flex; gap: 3px; font-size: 1.05rem; color: var(--primary-l); height: 1.9rem; align-items: center; }
+
+    /* ─── Mur de souvenirs : le masque entouré de magnets ─── */
     .hero-visual { display: flex; justify-content: center; align-items: center; }
-    .logo-frame {
-      position: relative; width: 360px; height: 360px;
-      display: flex; align-items: center; justify-content: center;
+    .memory-wall {
+      position: relative; width: min(100%, 520px); aspect-ratio: 1;
+      container-type: inline-size;
     }
-    .logo-ring {
-      position: absolute; border-radius: 50%;
-      border: 1px solid rgba(184,80,66,.3);
-      animation: ringpulse 3.5s ease-in-out infinite;
+    .wall-glow {
+      position: absolute; inset: 12%; border-radius: 50%;
+      background: radial-gradient(circle, rgba(201,115,74,.32) 0%, rgba(184,80,66,.08) 55%, transparent 72%);
     }
-    .logo-ring-1 { inset: 0; animation-delay: 0s; }
-    .logo-ring-2 { inset: -24px; border-color: rgba(201,115,74,.2); animation-delay: 1.2s; }
-    @keyframes ringpulse { 0%,100%{opacity:1;transform:scale(1);} 50%{opacity:.5;transform:scale(1.04);} }
-    .logo-frame img {
-      width: 78%; height: 78%; object-fit: contain;
-      position: relative; z-index: 2;
-      filter: drop-shadow(0 20px 48px rgba(0,0,0,.35));
-      animation: float 4.5s ease-in-out infinite;
+    .wall-mask {
+      position: absolute; left: 50%; top: 50%; width: 44%;
+      transform: translate(-50%, -50%);
+      animation: magIn .8s cubic-bezier(.2,.7,.2,1) .2s both;
+      --r: 0deg;
     }
-    @keyframes float { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-16px);} }
+    .wall-mask img {
+      width: 100%; filter: drop-shadow(0 22px 40px rgba(0,0,0,.45));
+      animation: floatY 6s ease-in-out 1s infinite;
+    }
+
+    /* Un magnet : le parent porte la position et l'inclinaison, l'enfant flotte */
+    .mag {
+      position: absolute; transform: rotate(var(--r));
+      animation: magIn .7s cubic-bezier(.2,.7,.2,1) both;
+      animation-delay: calc(var(--i) * 90ms + 450ms);
+    }
+    .mag-in {
+      width: 100%; height: 100%; box-shadow: 0 14px 30px rgba(0,0,0,.38), inset 0 1px 0 rgba(255,255,255,.25);
+      animation: floatY var(--d, 7s) ease-in-out calc(var(--i) * -1.3s) infinite;
+    }
+    @keyframes magIn {
+      from { opacity: 0; transform: translateY(26px) rotate(var(--r)) scale(.88); }
+      to   { opacity: 1; transform: rotate(var(--r)); }
+    }
+    .wall-mask { animation-name: maskIn; }
+    @keyframes maskIn {
+      from { opacity: 0; transform: translate(-50%, -44%) scale(.9); }
+      to   { opacity: 1; transform: translate(-50%, -50%); }
+    }
+    @keyframes floatY { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-2.2cqw); } }
+
+    /* MINI : rond */
+    .mag-mini { top: 7%; left: 5%; width: 25%; aspect-ratio: 1; --r: -9deg; --i: 0; --d: 6.5s; }
+    .mag-mini .mag-in {
+      border-radius: 50%; background: radial-gradient(circle at 35% 30%, #34B5A9, #187069);
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1cqw;
+      color: var(--white); font-weight: 600; font-size: max(11px, 3.1cqw);
+    }
+    .mag-mini i { font-size: 5cqw; color: #FFD3C7; }
+
+    /* BEST SELLER : photo façon polaroid */
+    .mag-photo { top: 3%; right: 5%; width: 29%; aspect-ratio: 3 / 4; --r: 7deg; --i: 1; --d: 7.5s; }
+    .mag-photo .mag-in {
+      background: #FFFDF9; border-radius: 1.6cqw; padding: 1.8cqw 1.8cqw 0;
+      display: flex; flex-direction: column;
+    }
+    .photo-scene {
+      flex: 1; border-radius: 1cqw; position: relative; overflow: hidden;
+      background: linear-gradient(180deg, #F7B24C 0%, #E8644A 48%, #8A2E52 100%);
+    }
+    .photo-scene::before { /* soleil */
+      content: ''; position: absolute; left: 50%; top: 34%; width: 34%; aspect-ratio: 1;
+      transform: translateX(-50%); border-radius: 50%; background: #FFE3A3;
+    }
+    .photo-scene::after { /* mer */
+      content: ''; position: absolute; left: -10%; right: -10%; bottom: 0; height: 36%;
+      background: repeating-linear-gradient(180deg, #2C5F8A 0 2cqw, #3B76A6 2cqw 3.4cqw);
+      border-radius: 40% 40% 0 0 / 18% 18% 0 0;
+    }
+    .photo-cap {
+      font-family: 'Playfair Display', serif; font-style: italic; color: var(--dark);
+      font-size: max(10px, 3cqw); text-align: center; padding: 1.6cqw 0 2cqw;
+    }
+
+    /* SLIM : message */
+    .mag-slim { bottom: 11%; left: 1%; width: 42%; --r: -5deg; --i: 2; --d: 8s; }
+    .mag-slim .mag-in {
+      background: linear-gradient(135deg, #FBF7F1, #EADFD2); border-radius: 1.4cqw;
+      padding: 2.6cqw 3cqw; border: .5cqw solid #CFC3B6;
+      font-family: 'Playfair Display', serif; font-style: italic; font-weight: 600;
+      color: var(--primary-d); font-size: max(11px, 3.4cqw); line-height: 1.25; text-align: center;
+    }
+
+    /* Âmes d'Ivoire */
+    .mag-ivoire { bottom: 5%; right: 8%; width: 24%; aspect-ratio: 1; --r: 9deg; --i: 3; --d: 6.8s; }
+    .mag-ivoire .mag-in {
+      border-radius: 3cqw; background: linear-gradient(145deg, #F2A93B, var(--primary) 70%);
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1.2cqw;
+      color: var(--white); font-weight: 600; font-size: max(10px, 2.7cqw); text-align: center; line-height: 1.15;
+    }
+    .mag-ivoire i { font-size: 6cqw; }
+
+    /* Étiquette de prix */
+    .mag-price { top: 47%; right: -2%; --r: -4deg; --i: 4; --d: 7s; }
+    .mag-price .mag-in {
+      background: var(--white); color: var(--primary-d); border-radius: 99px;
+      padding: 1.6cqw 3.2cqw; font-weight: 700; font-size: max(11px, 3cqw); white-space: nowrap;
+      display: flex; align-items: center; gap: 1.4cqw;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      #hero *, #hero *::after { animation: none !important; }
+      .hero-title em::after { transform: scaleX(1); }
+    }
 
     /* ─── Shared section styles ─── */
     section { padding: 88px 28px; }
@@ -605,7 +707,7 @@
       .hero-sub, .about-p { margin-left:auto; margin-right:auto; }
       .hero-btns { justify-content:center; }
       .hero-stats { justify-content:center; }
-      .logo-frame { width:260px; height:260px; margin:0 auto; }
+      .memory-wall { width: min(100%, 420px); margin: 0 auto; }
       .about-visual { order:-1; }
       .about-tag, .about-h { text-align:center; }
       .about-quote { text-align:left; }
@@ -669,24 +771,24 @@
 <section id="hero">
   <div class="hero-grid">
     <div class="hero-content">
-      <div class="hero-badge"><i class="fas fa-star"></i> Fait avec passion, livré avec émotion</div>
-      <h1 class="hero-title">
+      <div class="hero-badge hero-reveal" style="--i:0"><i class="fas fa-star" aria-hidden="true"></i> Fait avec passion, livré avec émotion</div>
+      <h1 class="hero-title hero-reveal" style="--i:1">
         Vos souvenirs,<br>
         <em>immortalisés</em><br>
         en magnets
       </h1>
-      <p class="hero-sub">
-        Zouzoukou Mem's transforme vos photos et moments précieux en magnets personnalisés de haute qualité — pour particuliers et professionnels, à partir de <strong style="color:var(--primary-l)">1 000 F CFA</strong>.
+      <p class="hero-sub hero-reveal" style="--i:2">
+        Zouzoukou Mem's transforme vos photos et moments précieux en magnets personnalisés de haute qualité — pour particuliers et professionnels, à partir de <strong>1 000 F CFA</strong>.
       </p>
-      <div class="hero-btns">
+      <div class="hero-btns hero-reveal" style="--i:3">
         <a href="https://wa.me/2250747081151" target="_blank" rel="noopener" class="btn btn-teal">
-          <i class="fab fa-whatsapp"></i> Commander sur WhatsApp
+          <i class="fab fa-whatsapp" aria-hidden="true"></i> Commander sur WhatsApp
         </a>
         <a href="#products" class="btn btn-outline">
-          <i class="fas fa-th-large"></i> Voir nos produits
+          <i class="fas fa-th-large" aria-hidden="true"></i> Voir nos produits
         </a>
       </div>
-      <div class="hero-stats">
+      <div class="hero-stats hero-reveal" style="--i:4">
         <div>
           <div class="stat-num">100%</div>
           <div class="stat-lbl">Personnalisé</div>
@@ -696,16 +798,39 @@
           <div class="stat-lbl">Collections</div>
         </div>
         <div>
-          <div class="stat-num">★★★★★</div>
+          <div class="stat-stars" role="img" aria-label="5 étoiles sur 5">
+            <i class="fas fa-star" aria-hidden="true"></i><i class="fas fa-star" aria-hidden="true"></i><i class="fas fa-star" aria-hidden="true"></i><i class="fas fa-star" aria-hidden="true"></i><i class="fas fa-star" aria-hidden="true"></i>
+          </div>
           <div class="stat-lbl">Satisfaction</div>
         </div>
       </div>
     </div>
     <div class="hero-visual">
-      <div class="logo-frame">
-        <div class="logo-ring logo-ring-2"></div>
-        <div class="logo-ring logo-ring-1"></div>
-        <img src="assets/logo.jpeg" alt="Zouzoukou Mem's" />
+      <div class="memory-wall">
+        <div class="wall-glow" aria-hidden="true"></div>
+
+        <div class="mag mag-mini" aria-hidden="true">
+          <div class="mag-in"><i class="fas fa-heart"></i>Mamie</div>
+        </div>
+        <div class="mag mag-photo" aria-hidden="true">
+          <div class="mag-in">
+            <div class="photo-scene"></div>
+            <div class="photo-cap">Assinie 2024</div>
+          </div>
+        </div>
+        <div class="mag mag-slim" aria-hidden="true">
+          <div class="mag-in">« Tu nous manques papa »</div>
+        </div>
+        <div class="mag mag-ivoire" aria-hidden="true">
+          <div class="mag-in"><i class="fas fa-globe-africa"></i>Âmes<br>d'Ivoire</div>
+        </div>
+        <div class="mag mag-price" aria-hidden="true">
+          <div class="mag-in"><i class="fas fa-tag"></i>dès 1 000 F</div>
+        </div>
+
+        <div class="wall-mask">
+          <img src="assets/logo-mask.png" alt="Zouzoukou Mem's" />
+        </div>
       </div>
     </div>
   </div>
