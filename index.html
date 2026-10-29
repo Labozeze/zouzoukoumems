@@ -409,63 +409,119 @@
 
     /* ─── Products ─── */
     #products { background: var(--bg); }
-    .tabs { display: flex; justify-content: center; gap: 12px; margin-bottom: 44px; flex-wrap: wrap; }
-    .tab {
-      padding: 12px 28px; border: 2px solid rgba(184,80,66,.2);
-      background: var(--white); color: var(--muted); border-radius: 50px;
-      font-size: .88rem; font-weight: 600; cursor: pointer;
-      transition: all var(--transition); font-family: inherit;
-      display: flex; align-items: center; gap: 8px;
+    /* Onglets : contrôle segmenté accessible */
+    .tabs-wrap { display: flex; justify-content: center; margin-bottom: 28px; }
+    .tabs {
+      display: inline-flex; gap: 6px; padding: 6px; border-radius: 999px;
+      background: var(--white); box-shadow: var(--shadow);
     }
-    .tab.active, .tab:hover { background: var(--primary); border-color: var(--primary); color: var(--white); }
+    .tab {
+      min-height: 48px; padding: 10px 24px; border: none; border-radius: 999px;
+      background: transparent; color: var(--muted); cursor: pointer;
+      font-family: inherit; font-size: .92rem; font-weight: 600;
+      display: flex; align-items: center; gap: 8px;
+      transition: background .2s ease, color .2s ease;
+    }
+    .tab:hover { background: rgba(184,80,66,.08); color: var(--primary-d); }
+    .tab[aria-selected="true"] { background: var(--primary-d); color: var(--white); box-shadow: 0 4px 14px rgba(154,56,48,.3); }
+    .tab:focus-visible { outline: 3px solid var(--primary-l); outline-offset: 2px; }
+    .tab-count {
+      font-size: .72rem; font-weight: 700; min-width: 22px; height: 22px; padding: 0 6px;
+      border-radius: 999px; display: inline-flex; align-items: center; justify-content: center;
+      background: rgba(184,80,66,.12); color: var(--primary-d);
+    }
+    .tab[aria-selected="true"] .tab-count { background: rgba(255,255,255,.2); color: var(--white); }
     .tab-panel { display: none; }
     .tab-panel.active { display: block; }
-    .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; }
-    .card {
-      background: var(--white); border-radius: 22px; overflow: hidden;
-      box-shadow: var(--shadow); transition: transform var(--transition), box-shadow var(--transition);
+
+    /* Bandeau de présentation de la collection */
+    .col-intro {
+      display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap;
+      text-align: center; margin-bottom: 32px; color: var(--muted); font-size: .98rem;
     }
-    .card:hover { transform: translateY(-8px); box-shadow: var(--shadow-h); }
-    .card-body { padding: 32px 28px 20px; position: relative; }
-    .card-icon {
-      width: 54px; height: 54px; border-radius: 14px;
-      display: flex; align-items: center; justify-content: center; font-size: 1.4rem; margin-bottom: 16px;
+    .col-audience {
+      display: inline-flex; align-items: center; gap: 7px; padding: 5px 14px; border-radius: 999px;
+      background: rgba(184,80,66,.1); color: var(--primary-d); font-size: .8rem; font-weight: 700;
+      letter-spacing: .04em; text-transform: uppercase;
     }
-    .ci-teal   { background: rgba(184,80,66,.1);   color: var(--primary); }
-    .ci-navy   { background: rgba(45,18,8,.08);     color: var(--dark); }
-    .ci-coral  { background: rgba(201,115,74,.12);  color: var(--primary-l); }
-    .ci-gold   { background: rgba(249,246,242,.8);  color: var(--primary-d); border: 1px solid rgba(184,80,66,.15); }
-    .ci-sky    { background: rgba(184,80,66,.08);   color: var(--primary); }
-    .card-badge {
-      position: absolute; top: 20px; right: 20px;
-      padding: 5px 13px; border-radius: 50px; font-size: .7rem; font-weight: 700; letter-spacing: .05em; text-transform: uppercase;
+
+    /* Cartes produit */
+    .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 24px; }
+    .pcard {
+      background: var(--white); border-radius: 22px; overflow: hidden; box-shadow: var(--shadow);
+      display: flex; flex-direction: column;
+      transition: transform .3s ease, box-shadow .3s ease;
     }
-    .badge-gold   { background: var(--primary-l); color: var(--white); }
-    .badge-teal   { background: var(--primary);   color: var(--white); }
-    .badge-coral  { background: var(--primary-d); color: var(--white); }
-    .card h3 { font-family:'Playfair Display',serif; font-size:1.2rem; color:var(--text); margin-bottom:8px; }
-    .card p  { font-size:.88rem; color:var(--muted); line-height:1.65; }
-    .card-foot {
-      padding: 18px 28px 26px; border-top: 1px solid rgba(51,51,51,.07);
-      display: flex; align-items: center; justify-content: space-between;
+    .pcard:hover { transform: translateY(-6px); box-shadow: var(--shadow-h); }
+    .tab-panel.active .pcard { animation: cardIn .5s cubic-bezier(.2,.7,.2,1) both; }
+    .tab-panel.active .pcard:nth-child(2) { animation-delay: .05s; }
+    .tab-panel.active .pcard:nth-child(3) { animation-delay: .1s; }
+    .tab-panel.active .pcard:nth-child(4) { animation-delay: .15s; }
+    @keyframes cardIn { from { opacity: 0; transform: translateY(16px); } }
+
+    /* Bandeau « fiche technique » : les dimensions du magnet en grand */
+    .pcard-stage {
+      position: relative; min-height: 132px; padding: 26px 24px 20px;
+      display: flex; flex-direction: column; justify-content: flex-end;
+      background: linear-gradient(180deg, #F6F1EA, #EDE4D9);
+      border-bottom: 1px solid rgba(184,80,66,.12);
     }
-    .price { font-family:'Playfair Display',serif; font-size:1.35rem; color:var(--text); font-weight:700; }
-    .price span { font-family:'Poppins',sans-serif; font-size:.78rem; color:var(--muted); font-weight:400; }
+    .pcard-spec {
+      display: flex; align-items: baseline; gap: 6px; line-height: 1;
+      font-family: 'Playfair Display', serif; font-weight: 700; color: var(--primary-d);
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    .spec-num  { font-size: 2.4rem; }
+    .spec-text { font-size: 1.7rem; }
+    .spec-unit { font-family: 'Poppins', sans-serif; font-size: .9rem; font-weight: 600; color: var(--muted); }
+    .pcard-sub {
+      margin-top: 8px; font-size: .8rem; font-weight: 600; letter-spacing: .06em;
+      text-transform: uppercase; color: var(--muted);
+    }
+    .pcard-badge {
+      position: absolute; top: 14px; right: 14px; padding: 5px 12px; border-radius: 999px;
+      font-size: .7rem; font-weight: 700; letter-spacing: .05em; text-transform: uppercase;
+      background: var(--primary-d); color: var(--white);
+    }
+    .pcard-stage-dark { background: transparent; border-bottom-color: rgba(255,255,255,.12); }
+    .pcard-stage-dark .pcard-spec { color: #F2C76B; }
+    .pcard-stage-dark .pcard-sub, .pcard-stage-dark .spec-unit { color: rgba(255,255,255,.72); }
+    .pcard-stage-dark .pcard-badge { background: #F2C76B; color: var(--dark); }
+
+    .pcard-body { padding: 22px 24px 8px; flex: 1; }
+    .pcard-body h3 { font-family: 'Playfair Display', serif; font-size: 1.25rem; color: var(--text); margin-bottom: 8px; }
+    .pcard-body p { font-size: .92rem; color: var(--muted); line-height: 1.6; }
+    .pcard-foot {
+      padding: 16px 24px 22px; display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    }
+    .price { font-family: 'Playfair Display', serif; font-size: 1.35rem; color: var(--text); font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
+    .price span { font-family: 'Poppins', sans-serif; font-size: .78rem; color: var(--muted); font-weight: 400; }
+    .price-quote { font-size: 1rem; color: var(--primary-d); }
     .btn-sm {
-      display: inline-flex; align-items: center; gap: 8px;
-      background: var(--primary); color: var(--white);
-      padding: 10px 20px; border-radius: 50px; font-size: .83rem; font-weight: 600;
-      transition: all var(--transition);
+      display: inline-flex; align-items: center; gap: 8px; min-height: 44px;
+      background: var(--primary); color: var(--white); cursor: pointer;
+      padding: 10px 20px; border-radius: 50px; font-size: .85rem; font-weight: 600;
+      transition: background .2s ease, transform .2s ease;
     }
     .btn-sm:hover { background: var(--primary-d); transform: translateY(-2px); }
-    .card-dark { background: linear-gradient(145deg, var(--dark), #5C2318); }
-    .card-dark h3 { color: var(--white); }
-    .card-dark p  { color: rgba(255,255,255,.65); }
-    .card-dark .card-foot { border-top-color: rgba(255,255,255,.1); }
-    .card-dark .price { color: var(--primary-l); }
-    .btn-sm-teal { background: var(--primary); }
-    .btn-sm-teal:hover { background: var(--primary-d); }
+    .btn-sm:focus-visible, .btn-add-cart:focus-visible { outline: 3px solid var(--primary-l); outline-offset: 3px; }
+    .pcard-dark { background: linear-gradient(145deg, var(--dark), #5C2318); }
+    .pcard-dark .pcard-body h3 { color: var(--white); }
+    .pcard-dark .pcard-body p { color: rgba(255,255,255,.75); }
+    .pcard-dark .price { color: var(--primary-l); }
+    .col-note { text-align: center; margin-top: 28px; color: var(--muted); font-size: .92rem; }
+    .col-note a { color: var(--primary-d); font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
 
+    @media (max-width: 600px) {
+      .tabs { display: grid; grid-template-columns: repeat(3, 1fr); width: 100%; border-radius: 20px; }
+      .tab { flex-direction: column; gap: 4px; padding: 10px 6px; border-radius: 14px; font-size: .78rem; line-height: 1.2; text-align: center; }
+      .tab-count { display: none; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .tab-panel.active .pcard { animation: none; }
+      .pcard { transition: none; }
+      .pcard:hover { transform: none; }
+    }
     /* ─── Process ─── */
     #process { background: var(--bg); }
     /* 3 phases (Vous imaginez / Nous créons / Vous recevez) regroupant les 7 étapes */
@@ -887,121 +943,149 @@
       <p class="section-sub">Trois gammes soigneusement conçues — du souvenir personnel à la communication professionnelle, en passant par la fierté culturelle ivoirienne.</p>
     </div>
 
-    <div class="tabs fade">
-      <button class="tab active" data-tab="instants"><i class="fas fa-heart"></i> Instants Gravés</button>
-      <button class="tab" data-tab="pro"><i class="fas fa-briefcase"></i> Magnets Pro</button>
-      <button class="tab" data-tab="ivoire"><i class="fas fa-globe-africa"></i> Âmes d'Ivoire</button>
+    <div class="tabs-wrap fade">
+      <div class="tabs" role="tablist" aria-label="Collections">
+        <button class="tab active" role="tab" id="tab-instants" data-tab="instants" aria-selected="true" aria-controls="panel-instants">
+          <i class="fas fa-heart" aria-hidden="true"></i> Instants Gravés <span class="tab-count" id="instants-count" aria-hidden="true">4</span>
+        </button>
+        <button class="tab" role="tab" id="tab-pro" data-tab="pro" aria-selected="false" aria-controls="panel-pro" tabindex="-1">
+          <i class="fas fa-briefcase" aria-hidden="true"></i> Magnets Pro <span class="tab-count" aria-hidden="true">3</span>
+        </button>
+        <button class="tab" role="tab" id="tab-ivoire" data-tab="ivoire" aria-selected="false" aria-controls="panel-ivoire" tabindex="-1">
+          <i class="fas fa-globe-africa" aria-hidden="true"></i> Âmes d'Ivoire <span class="tab-count" aria-hidden="true">3</span>
+        </button>
+      </div>
     </div>
 
     <!-- Instants Gravés — chargé dynamiquement via API -->
-    <div class="tab-panel active" id="panel-instants">
+    <div class="tab-panel active" id="panel-instants" role="tabpanel" aria-labelledby="tab-instants">
+      <p class="col-intro">
+        <span class="col-audience"><i class="fas fa-user" aria-hidden="true"></i> Particuliers</span>
+        Vos photos et vos mots, à partir de 1 000 F CFA.
+      </p>
       <div id="instants-loader" class="api-loader">
         <div class="api-spinner"></div>
         <p>Chargement des produits…</p>
       </div>
       <div id="instants-error" class="api-error" style="display:none">
-        <i class="fas fa-exclamation-circle"></i>
+        <i class="fas fa-exclamation-circle" aria-hidden="true"></i>
         <p>Impossible de charger les produits. Veuillez réessayer.</p>
         <button onclick="loadInstantsGraves()" class="btn-add-cart" style="margin-top:12px">
-          <i class="fas fa-redo"></i> Réessayer
+          <i class="fas fa-redo" aria-hidden="true"></i> Réessayer
         </button>
       </div>
       <div class="cards" id="instants-cards"></div>
     </div>
 
     <!-- Magnets Pro -->
-    <div class="tab-panel" id="panel-pro">
+    <div class="tab-panel" id="panel-pro" role="tabpanel" aria-labelledby="tab-pro">
+      <p class="col-intro">
+        <span class="col-audience"><i class="fas fa-briefcase" aria-hidden="true"></i> Entreprises &amp; événements</span>
+        Votre logo, votre équipe, vos produits : tarif selon la quantité.
+      </p>
       <div class="cards">
-        <div class="card fade">
-          <div class="card-body">
-            <div class="card-icon ci-teal"><i class="fas fa-circle"></i></div>
+        <article class="pcard">
+          <div class="pcard-stage">
+            <div class="pcard-spec"><span class="spec-num">Ø 40</span><span class="spec-unit">mm</span></div>
+            <p class="pcard-sub">Rond · carré · frisé</p>
+          </div>
+          <div class="pcard-body">
             <h3>MINI PRO</h3>
-            <p>Magnet rond, carré ou frisé de 40 mm — logo simplifié ou pictogramme. Format compact, impact immédiat. Parfait pour vos événements et goodie bags.</p>
+            <p>Rond, carré ou frisé de 40 mm : logo simplifié ou pictogramme. Format compact, impact immédiat, parfait pour vos événements et goodie bags.</p>
           </div>
-          <div class="card-foot">
-            <div class="price">Sur devis</div>
-            <a href="https://wa.me/2250747081151" target="_blank" rel="noopener" class="btn-sm">
-              <i class="fab fa-whatsapp"></i> Devis
-            </a>
+          <div class="pcard-foot">
+            <div class="price price-quote">Sur devis</div>
+            <a href="https://wa.me/2250747081151?text=Bonjour%2C%20je%20souhaite%20un%20devis%20pour%20des%20magnets%20MINI%20PRO." target="_blank" rel="noopener" class="btn-sm"><i class="fab fa-whatsapp" aria-hidden="true"></i> Devis</a>
           </div>
-        </div>
-        <div class="card fade">
-          <div class="card-body">
-            <div class="card-icon ci-navy"><i class="fas fa-star"></i></div>
-            <span class="card-badge badge-gold">Best Seller</span>
+        </article>
+        <article class="pcard">
+          <div class="pcard-stage">
+            <div class="pcard-spec"><span class="spec-num">53 × 80</span><span class="spec-unit">mm</span></div>
+            <p class="pcard-sub">Métal · rectangulaire</p>
+            <span class="pcard-badge">Best Seller</span>
+          </div>
+          <div class="pcard-body">
             <h3>BEST SELLER PRO</h3>
-            <p>Magnet métalique rectangulaire 53×80 mm — logo, photo d'équipe ou de produit, message personnalisé. L'outil de communication original qui marque les esprits.</p>
+            <p>Métallique rectangulaire : logo, photo d'équipe ou de produit, message personnalisé. L'outil de communication original qui marque les esprits.</p>
           </div>
-          <div class="card-foot">
-            <div class="price">Sur devis</div>
-            <a href="https://wa.me/2250747081151" target="_blank" rel="noopener" class="btn-sm">
-              <i class="fab fa-whatsapp"></i> Devis
-            </a>
+          <div class="pcard-foot">
+            <div class="price price-quote">Sur devis</div>
+            <a href="https://wa.me/2250747081151?text=Bonjour%2C%20je%20souhaite%20un%20devis%20pour%20des%20magnets%20BEST%20SELLER%20PRO." target="_blank" rel="noopener" class="btn-sm"><i class="fab fa-whatsapp" aria-hidden="true"></i> Devis</a>
           </div>
-        </div>
-        <div class="card fade">
-          <div class="card-body">
-            <div class="card-icon ci-gold"><i class="fas fa-cut"></i></div>
-            <span class="card-badge badge-teal">Premium</span>
+        </article>
+        <article class="pcard">
+          <div class="pcard-stage">
+            <div class="pcard-spec"><span class="spec-num">65 × 145</span><span class="spec-unit">mm</span></div>
+            <p class="pcard-sub">Ou 60 × 60 · découpe sur mesure</p>
+            <span class="pcard-badge">Premium</span>
+          </div>
+          <div class="pcard-body">
             <h3>FIN</h3>
-            <p>Feuille métalique 65×145 mm ou 60×60 mm — découpe sur-mesure de votre logo ou visuel événementiel. Le summum de l'élégance au service de votre image de marque.</p>
+            <p>Feuille métallique découpée sur mesure à la forme de votre logo ou de votre visuel. Le summum de l'élégance pour votre image de marque.</p>
           </div>
-          <div class="card-foot">
-            <div class="price">Sur devis</div>
-            <a href="https://wa.me/2250747081151" target="_blank" rel="noopener" class="btn-sm">
-              <i class="fab fa-whatsapp"></i> Devis
-            </a>
+          <div class="pcard-foot">
+            <div class="price price-quote">Sur devis</div>
+            <a href="https://wa.me/2250747081151?text=Bonjour%2C%20je%20souhaite%20un%20devis%20pour%20des%20magnets%20FIN." target="_blank" rel="noopener" class="btn-sm"><i class="fab fa-whatsapp" aria-hidden="true"></i> Devis</a>
           </div>
-        </div>
+        </article>
       </div>
     </div>
 
     <!-- Âmes d'Ivoire -->
-    <div class="tab-panel" id="panel-ivoire">
+    <div class="tab-panel" id="panel-ivoire" role="tabpanel" aria-labelledby="tab-ivoire">
+      <p class="col-intro">
+        <span class="col-audience"><i class="fas fa-globe-africa" aria-hidden="true"></i> Fierté ivoirienne</span>
+        Les sites emblématiques de la Côte d'Ivoire, à offrir ou à garder.
+      </p>
       <div class="cards">
-        <div class="card fade">
-          <div class="card-body">
-            <div class="card-icon ci-gold"><i class="fas fa-water"></i></div>
-            <span class="card-badge badge-coral">Populaire</span>
+        <article class="pcard">
+          <div class="pcard-stage">
+            <div class="pcard-spec"><span class="spec-num">53 × 80</span><span class="spec-unit">mm</span></div>
+            <p class="pcard-sub">Métal · Yamoussoukro</p>
+            <span class="pcard-badge">Populaire</span>
+          </div>
+          <div class="pcard-body">
             <h3>Lac aux Caïmans</h3>
-            <p>Un hommage à la splendeur de Yamoussoukro. Magnet métalique 53×80 mm capturant l'essence de ce site emblématique de la Côte d'Ivoire.</p>
+            <p>Un hommage à la splendeur de Yamoussoukro : l'essence de ce site emblématique de la Côte d'Ivoire, sur magnet métallique.</p>
           </div>
-          <div class="card-foot">
-            <div class="price">Sur devis</div>
-            <a href="https://wa.me/2250747081151" target="_blank" rel="noopener" class="btn-sm">
-              <i class="fab fa-whatsapp"></i> Commander
-            </a>
+          <div class="pcard-foot">
+            <div class="price price-quote">Sur devis</div>
+            <a href="https://wa.me/2250747081151?text=Bonjour%2C%20je%20souhaite%20commander%20le%20magnet%20Lac%20aux%20Ca%C3%AFmans." target="_blank" rel="noopener" class="btn-sm"><i class="fab fa-whatsapp" aria-hidden="true"></i> Commander</a>
           </div>
-        </div>
-        <div class="card fade">
-          <div class="card-body">
-            <div class="card-icon ci-teal"><i class="fas fa-mosque"></i></div>
+        </article>
+        <article class="pcard">
+          <div class="pcard-stage">
+            <div class="pcard-spec"><span class="spec-num">53 × 80</span><span class="spec-unit">mm</span></div>
+            <p class="pcard-sub">Métal · Man &amp; Korhogo</p>
+          </div>
+          <div class="pcard-body">
             <h3>Cascades &amp; Mosquée</h3>
-            <p>L'authenticité de Man et la spiritualité de Korhogo réunies. Magnet métalique 53×80 mm célébrant la richesse culturelle ivoirienne.</p>
+            <p>L'authenticité de Man et la spiritualité de Korhogo réunies, pour célébrer la richesse culturelle ivoirienne.</p>
           </div>
-          <div class="card-foot">
-            <div class="price">Sur devis</div>
-            <a href="https://wa.me/2250747081151" target="_blank" rel="noopener" class="btn-sm">
-              <i class="fab fa-whatsapp"></i> Commander
-            </a>
+          <div class="pcard-foot">
+            <div class="price price-quote">Sur devis</div>
+            <a href="https://wa.me/2250747081151?text=Bonjour%2C%20je%20souhaite%20commander%20le%20magnet%20Cascades%20%26%20Mosqu%C3%A9e." target="_blank" rel="noopener" class="btn-sm"><i class="fab fa-whatsapp" aria-hidden="true"></i> Commander</a>
           </div>
-        </div>
-        <div class="card card-dark fade">
-          <div class="card-body">
-            <div class="card-icon" style="background:rgba(245,196,24,.2);color:var(--gold)"><i class="fas fa-crown"></i></div>
-            <span class="card-badge badge-teal">Édition Spéciale</span>
+        </article>
+        <article class="pcard pcard-dark">
+          <div class="pcard-stage pcard-stage-dark">
+            <div class="pcard-spec"><span class="spec-text">Sur mesure</span></div>
+            <p class="pcard-sub">Éditions exclusives</p>
+            <span class="pcard-badge">Édition spéciale</span>
+          </div>
+          <div class="pcard-body">
             <h3>Âmes d'Ivoire Spéciale</h3>
-            <p>Des éditions exclusives mettant à l'honneur les trésors cachés de la Côte d'Ivoire. Collection sur mesure — contactez-nous pour en savoir plus.</p>
+            <p>Des éditions exclusives qui mettent à l'honneur les trésors cachés de la Côte d'Ivoire. Collection sur mesure : contactez-nous pour en savoir plus.</p>
           </div>
-          <div class="card-foot">
+          <div class="pcard-foot">
             <div class="price">Édition limitée</div>
-            <a href="https://wa.me/2250747081151" target="_blank" rel="noopener" class="btn-sm btn-sm-teal">
-              <i class="fab fa-whatsapp"></i> Découvrir
-            </a>
+            <a href="https://wa.me/2250747081151?text=Bonjour%2C%20je%20souhaite%20d%C3%A9couvrir%20l%27%C3%A9dition%20sp%C3%A9ciale%20%C3%82mes%20d%27Ivoire." target="_blank" rel="noopener" class="btn-sm"><i class="fab fa-whatsapp" aria-hidden="true"></i> Découvrir</a>
           </div>
-        </div>
+        </article>
       </div>
     </div>
+
+    <p class="col-note fade">Un format ou une idée qui n'est pas dans le catalogue ? <a href="https://wa.me/2250747081151" target="_blank" rel="noopener">Parlons-en sur WhatsApp</a>.</p>
   </div>
 </section>
 
@@ -1313,15 +1397,21 @@
   const API_URL = API_BASE + '/produits?actif=true';
   const API_KEY = '0123456789';  // clé publique : produits et prise de commande uniquement
 
-  const VARIANTE_ICON = {
-    'MINI':        { cls: 'ci-teal',  icon: 'fa-circle' },
-    'BEST SELLER': { cls: 'ci-navy',  icon: 'fa-image'  },
-    'SLIM':        { cls: 'ci-coral', icon: 'fa-leaf'   },
-  };
+  /* Fiche de chaque variante : dimensions et description courte */
+  const FORMATS = [
+    { test: v => /145/.test(v),        num: '65 × 145', sub: 'Métal · grand format' },
+    { test: v => /60/.test(v),         num: '60 × 60',  sub: 'Métal · carré' },
+    { test: v => v.startsWith('BEST'), num: '53 × 80',  sub: 'Métal · rectangulaire' },
+    { test: v => v.startsWith('MINI'), num: 'Ø 40',     sub: 'Rond · carré · frisé' },
+  ];
 
-  function getIconConfig(variante) {
-    const key = Object.keys(VARIANTE_ICON).find(k => variante.toUpperCase().startsWith(k));
-    return VARIANTE_ICON[key] || { cls: 'ci-teal', icon: 'fa-tag' };
+  function getFormat(variante) {
+    const v = variante.toUpperCase();
+    return FORMATS.find(f => f.test(v)) || { num: '', sub: '' };
+  }
+
+  function escHtml(s) {
+    return String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   }
 
   function formatPrice(prix) {
@@ -1329,26 +1419,28 @@
   }
 
   function buildCard(product) {
-    const { id, nom, variante, prix_unitaire, description } = product;
-    const { cls, icon } = getIconConfig(variante);
-    const prix = parseInt(prix_unitaire);
+    const { id, variante, prix_unitaire, description } = product;
+    const f = getFormat(variante);
     const isBestSeller = variante.toUpperCase().includes('BEST SELLER');
 
     return `
-      <div class="card fade in">
-        <div class="card-body">
-          <div class="card-icon ${cls}"><i class="fas ${icon}"></i></div>
-          ${isBestSeller ? '<span class="card-badge badge-gold">Best Seller</span>' : ''}
-          <h3>${variante}</h3>
-          <p>${description}</p>
+      <article class="pcard">
+        <div class="pcard-stage">
+          ${f.num ? `<div class="pcard-spec"><span class="spec-num">${f.num}</span><span class="spec-unit">mm</span></div>
+          <p class="pcard-sub">${f.sub}</p>` : ''}
+          ${isBestSeller ? '<span class="pcard-badge">Best Seller</span>' : ''}
         </div>
-        <div class="card-foot">
+        <div class="pcard-body">
+          <h3>${escHtml(variante)}</h3>
+          <p>${escHtml(description)}</p>
+        </div>
+        <div class="pcard-foot">
           <div class="price">${formatPrice(prix_unitaire)} F <span>CFA</span></div>
-          <button class="btn-add-cart" onclick="addToCart('${variante.replace(/'/g, "\\'")}', ${prix}, '${nom}', ${id})">
-            <i class="fas fa-cart-plus"></i> Ajouter
+          <button class="btn-add-cart" data-id="${parseInt(id)}">
+            <i class="fas fa-cart-plus" aria-hidden="true"></i> Ajouter
           </button>
         </div>
-      </div>`;
+      </article>`;
   }
 
   async function loadInstantsGraves() {
@@ -1381,6 +1473,13 @@
       }
 
       grid.innerHTML = instants.map(buildCard).join('');
+      document.getElementById('instants-count').textContent = instants.length;
+      grid.querySelectorAll('.btn-add-cart').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const p = instants.find(x => String(x.id) === btn.dataset.id);
+          addToCart(p.variante, parseInt(p.prix_unitaire), p.nom, p.id);
+        });
+      });
 
     } catch (err) {
       console.error('API produits :', err);
@@ -1539,15 +1638,24 @@ _Message envoyé depuis le site Zouzoukou Mem's_`;
     })
   );
 
-  /* Tabs */
-  const tabMap = { 'instants': 'Instants', 'pro': 'Pro', 'ivoire': 'Ivoire' };
-  document.querySelectorAll('.tab').forEach(btn => {
-    btn.addEventListener('click', function () {
-      const key = this.dataset.tab;
-      document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
-      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-      this.classList.add('active');
-      document.getElementById('panel-' + key).classList.add('active');
+  /* Tabs (ARIA + navigation au clavier) */
+  const tabs = [...document.querySelectorAll('.tab')];
+  function selectTab(btn, focus) {
+    tabs.forEach(b => {
+      const on = b === btn;
+      b.classList.toggle('active', on);
+      b.setAttribute('aria-selected', on);
+      b.tabIndex = on ? 0 : -1;
+      document.getElementById('panel-' + b.dataset.tab).classList.toggle('active', on);
+    });
+    if (focus) btn.focus();
+  }
+  tabs.forEach((btn, i) => {
+    btn.addEventListener('click', () => selectTab(btn));
+    btn.addEventListener('keydown', e => {
+      if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+      const next = tabs[(i + (e.key === 'ArrowRight' ? 1 : tabs.length - 1)) % tabs.length];
+      selectTab(next, true);
     });
   });
 
