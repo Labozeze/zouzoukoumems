@@ -2,3 +2,4 @@
 .DS_Store
 Thumbs.db
 API/config/db.local.php
+API/index_api.html

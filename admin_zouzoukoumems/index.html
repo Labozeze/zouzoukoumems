@@ -1,0 +1,1340 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin – Zouzoukou Mem's</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary:   #B85042;
+      --primary-d: #9A3830;
+      --primary-l: #C9734A;
+      --dark:      #2D1208;
+      --dark-2:    #4A1C10;
+      --bg:        #F9F6F2;
+      --text:      #333333;
+      --muted:     #7A6360;
+      --white:     #FFFFFF;
+      --sidebar-w: 240px;
+      --radius:    8px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* ── Sidebar ── */
+    .sidebar {
+      width: var(--sidebar-w);
+      background: var(--dark);
+      color: var(--white);
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 0; left: 0; bottom: 0;
+      z-index: 100;
+    }
+
+    .sidebar-logo {
+      padding: 24px 20px;
+      border-bottom: 1px solid var(--dark-2);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .sidebar-logo img {
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .sidebar-logo span {
+      font-size: .9rem;
+      font-weight: 700;
+      color: var(--white);
+      line-height: 1.2;
+    }
+
+    .sidebar-logo small {
+      display: block;
+      font-size: .68rem;
+      color: var(--primary-l);
+      font-weight: 400;
+    }
+
+    nav { padding: 16px 0; flex: 1; }
+
+    nav a {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 20px;
+      color: rgba(255,255,255,.7);
+      text-decoration: none;
+      font-size: .88rem;
+      transition: all .2s;
+      cursor: pointer;
+      border-left: 3px solid transparent;
+    }
+
+    nav a:hover { color: var(--white); background: rgba(255,255,255,.06); }
+
+    nav a.active {
+      color: var(--white);
+      background: rgba(184,80,66,.25);
+      border-left-color: var(--primary);
+    }
+
+    nav a i { width: 18px; text-align: center; }
+
+    /* ── Stats ── */
+    .stats-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .stats-header h2 { font-size: 1.1rem; color: var(--dark); font-weight: 600; }
+
+    .periode-tabs {
+      display: flex;
+      gap: 6px;
+    }
+
+    .periode-tab {
+      border: 1px solid #ddd;
+      background: var(--white);
+      border-radius: 6px;
+      padding: 6px 14px;
+      font-size: .8rem;
+      cursor: pointer;
+      transition: all .15s;
+      color: var(--muted);
+    }
+
+    .periode-tab:hover { border-color: var(--primary); color: var(--primary); }
+    .periode-tab.active { background: var(--primary); color: var(--white); border-color: var(--primary); }
+
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .kpi-card {
+      background: var(--white);
+      border: 1px solid #e8e2dc;
+      border-radius: var(--radius);
+      padding: 18px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .kpi-card .kpi-icon {
+      width: 36px; height: 36px;
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: .95rem;
+      margin-bottom: 4px;
+    }
+
+    .kpi-card .kpi-label {
+      font-size: .73rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .4px;
+      color: var(--muted);
+    }
+
+    .kpi-card .kpi-value {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--dark);
+      line-height: 1;
+    }
+
+    .kpi-card .kpi-sub {
+      font-size: .75rem;
+      color: var(--muted);
+    }
+
+    .kpi-primary .kpi-icon { background: rgba(184,80,66,.12); color: var(--primary); }
+    .kpi-green   .kpi-icon { background: #D1FAE5; color: #065F46; }
+    .kpi-blue    .kpi-icon { background: #DBEAFE; color: #1E40AF; }
+    .kpi-orange  .kpi-icon { background: #FEF3C7; color: #92400E; }
+    .kpi-red     .kpi-icon { background: #FEE2E2; color: #991B1B; }
+    .kpi-purple  .kpi-icon { background: #EDE9FE; color: #5B21B6; }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 24px;
+    }
+
+    @media (max-width: 860px) { .stats-grid { grid-template-columns: 1fr; } }
+
+    .statut-bars { display: flex; flex-direction: column; gap: 10px; }
+
+    .statut-bar-row { display: flex; flex-direction: column; gap: 4px; }
+
+    .statut-bar-info {
+      display: flex;
+      justify-content: space-between;
+      font-size: .78rem;
+    }
+
+    .statut-bar-info .sb-label { font-weight: 600; color: var(--text); }
+    .statut-bar-info .sb-count { color: var(--muted); }
+
+    .bar-track {
+      height: 8px;
+      background: #f0ebe5;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .bar-fill {
+      height: 100%;
+      border-radius: 4px;
+      transition: width .6s ease;
+    }
+
+    .top-table { width: 100%; border-collapse: collapse; font-size: .82rem; }
+    .top-table th {
+      text-align: left;
+      padding: 8px 10px;
+      font-size: .72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .4px;
+      color: var(--muted);
+      border-bottom: 1px solid #f0ebe5;
+    }
+    .top-table td { padding: 9px 10px; border-bottom: 1px solid #f8f4f0; }
+    .top-table tr:last-child td { border-bottom: none; }
+    .top-table .rank {
+      width: 24px; height: 24px;
+      background: var(--primary);
+      color: var(--white);
+      border-radius: 50%;
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: .72rem; font-weight: 700;
+    }
+    .top-table .rank-2 { background: var(--muted); }
+    .top-table .rank-3 { background: #c9a86c; }
+
+    /* ── Main ── */
+    .main {
+      margin-left: var(--sidebar-w);
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    .topbar {
+      background: var(--white);
+      border-bottom: 1px solid #e8e2dc;
+      padding: 14px 28px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .topbar h1 { font-size: 1.1rem; color: var(--dark); font-weight: 600; }
+    .topbar .badge-env {
+      font-size: .68rem;
+      background: var(--primary);
+      color: var(--white);
+      padding: 2px 8px;
+      border-radius: 20px;
+    }
+
+    .content { padding: 28px; flex: 1; }
+
+    /* ── Section visibility ── */
+    .section { display: none; }
+    .section.active { display: block; }
+
+    /* ── Cards grid (produits) ── */
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 16px;
+      margin-top: 20px;
+    }
+
+    .product-card {
+      background: var(--white);
+      border: 1px solid #e8e2dc;
+      border-radius: var(--radius);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .product-card .prod-variante {
+      font-size: .7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      color: var(--primary);
+    }
+
+    .product-card .prod-nom { font-size: .9rem; font-weight: 600; color: var(--dark); }
+
+    .product-card .prod-prix {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin-top: 4px;
+    }
+
+    .product-card .prod-desc {
+      font-size: .74rem;
+      color: var(--muted);
+      line-height: 1.4;
+      flex: 1;
+    }
+
+    .product-card .btn-add {
+      margin-top: 8px;
+      background: var(--primary);
+      color: var(--white);
+      border: none;
+      border-radius: var(--radius);
+      padding: 8px 12px;
+      font-size: .82rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: background .2s;
+    }
+
+    .product-card .btn-add:hover { background: var(--primary-d); }
+
+    /* ── Admin cart ── */
+    .nc-layout {
+      display: grid;
+      grid-template-columns: 1fr 360px;
+      gap: 24px;
+      align-items: start;
+    }
+
+    .panel-box {
+      background: var(--white);
+      border: 1px solid #e8e2dc;
+      border-radius: var(--radius);
+      padding: 20px;
+    }
+
+    .panel-box h3 {
+      font-size: .95rem;
+      color: var(--dark);
+      font-weight: 600;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid #f0ebe5;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .panel-box h3 i { color: var(--primary); }
+
+    /* Client form */
+    .form-row { display: flex; flex-direction: column; gap: 4px; margin-bottom: 14px; }
+
+    .form-row label { font-size: .8rem; font-weight: 600; color: var(--muted); }
+
+    .form-row input {
+      border: 1px solid #ddd6cf;
+      border-radius: var(--radius);
+      padding: 9px 12px;
+      font-size: .88rem;
+      color: var(--text);
+      outline: none;
+      transition: border-color .2s;
+    }
+
+    .form-row input:focus { border-color: var(--primary); }
+
+    /* Cart items */
+    #admin-cart-items { min-height: 60px; }
+
+    .cart-empty {
+      text-align: center;
+      color: var(--muted);
+      font-size: .83rem;
+      padding: 20px 0;
+    }
+
+    .cart-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 0;
+      border-bottom: 1px solid #f0ebe5;
+      font-size: .83rem;
+    }
+
+    .cart-item:last-child { border-bottom: none; }
+
+    .cart-item .ci-name { flex: 1; color: var(--dark); font-weight: 500; }
+    .cart-item .ci-sub { display: block; font-size: .72rem; color: var(--muted); }
+
+    .qty-ctrl {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .qty-ctrl button {
+      width: 24px; height: 24px;
+      border: 1px solid #ddd;
+      background: var(--bg);
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: .78rem;
+      display: flex; align-items: center; justify-content: center;
+      transition: background .15s;
+    }
+
+    .qty-ctrl button:hover { background: #ede7e0; }
+    .qty-ctrl span { min-width: 20px; text-align: center; font-weight: 600; }
+
+    .ci-prix { font-weight: 600; color: var(--primary); white-space: nowrap; }
+
+    .ci-remove {
+      background: none;
+      border: none;
+      color: #ccc;
+      cursor: pointer;
+      font-size: .8rem;
+      padding: 2px;
+      transition: color .2s;
+    }
+
+    .ci-remove:hover { color: #e33; }
+
+    .cart-total {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 0 0;
+      margin-top: 4px;
+      border-top: 2px solid #f0ebe5;
+      font-weight: 700;
+      font-size: .95rem;
+    }
+
+    .cart-total .total-amount { color: var(--primary); font-size: 1.1rem; }
+
+    .btn-submit {
+      width: 100%;
+      margin-top: 16px;
+      background: var(--primary);
+      color: var(--white);
+      border: none;
+      border-radius: var(--radius);
+      padding: 12px;
+      font-size: .9rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: background .2s;
+    }
+
+    .btn-submit:hover:not(:disabled) { background: var(--primary-d); }
+    .btn-submit:disabled { opacity: .6; cursor: not-allowed; }
+
+    /* ── Toast ── */
+    .toast {
+      position: fixed;
+      top: 20px; right: 20px;
+      background: var(--dark);
+      color: var(--white);
+      padding: 12px 20px;
+      border-radius: var(--radius);
+      font-size: .85rem;
+      z-index: 9999;
+      opacity: 0;
+      transform: translateY(-10px);
+      transition: all .3s;
+      max-width: 320px;
+    }
+
+    .toast.show { opacity: 1; transform: translateY(0); }
+    .toast.success { background: #1d7a3b; }
+    .toast.error { background: #b52020; }
+
+    /* ── Commandes table ── */
+    .page-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .page-header h2 { font-size: 1.1rem; color: var(--dark); font-weight: 600; }
+
+    .btn-refresh {
+      background: var(--primary);
+      color: var(--white);
+      border: none;
+      border-radius: var(--radius);
+      padding: 8px 16px;
+      font-size: .83rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: background .2s;
+    }
+
+    .btn-refresh:hover { background: var(--primary-d); }
+
+    .table-wrap {
+      background: var(--white);
+      border: 1px solid #e8e2dc;
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: .83rem;
+    }
+
+    thead { background: var(--dark); color: var(--white); }
+    thead th {
+      padding: 12px 14px;
+      text-align: left;
+      font-weight: 600;
+      font-size: .78rem;
+      text-transform: uppercase;
+      letter-spacing: .4px;
+      white-space: nowrap;
+    }
+
+    tbody tr { border-bottom: 1px solid #f0ebe5; transition: background .15s; }
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: #faf6f3; }
+
+    td { padding: 11px 14px; vertical-align: middle; }
+
+    .td-id { color: var(--muted); font-weight: 600; }
+    .td-client { font-weight: 600; color: var(--dark); }
+    .td-phone { color: var(--muted); font-size: .78rem; }
+    .td-articles { color: var(--text); max-width: 200px; }
+    .td-articles small { color: var(--muted); font-size: .75rem; }
+    .td-total { font-weight: 700; color: var(--primary); white-space: nowrap; }
+    .td-date { color: var(--muted); font-size: .78rem; white-space: nowrap; }
+
+    /* Status badges */
+    .badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: .72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .4px;
+    }
+
+    .badge-en_attente    { background: #FEF3C7; color: #92400E; }
+    .badge-confirmee     { background: #DBEAFE; color: #1E40AF; }
+    .badge-en_preparation{ background: #EDE9FE; color: #5B21B6; }
+    .badge-prete         { background: #D1FAE5; color: #065F46; }
+    .badge-livree        { background: #BBF7D0; color: #14532D; }
+    .badge-annulee       { background: #FEE2E2; color: #991B1B; }
+
+    /* Status select */
+    .status-select {
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      padding: 5px 8px;
+      font-size: .78rem;
+      cursor: pointer;
+      outline: none;
+      color: var(--text);
+      transition: border-color .2s;
+    }
+
+    .status-select:focus { border-color: var(--primary); }
+
+    .btn-update-status {
+      background: var(--primary);
+      color: var(--white);
+      border: none;
+      border-radius: 6px;
+      padding: 5px 10px;
+      font-size: .75rem;
+      cursor: pointer;
+      transition: background .2s;
+      white-space: nowrap;
+    }
+
+    .btn-update-status:hover { background: var(--primary-d); }
+
+    /* Pagination */
+    .pagination {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 20px;
+      border-top: 1px solid #f0ebe5;
+      font-size: .82rem;
+      color: var(--muted);
+    }
+
+    .pagination-btns { display: flex; gap: 6px; }
+
+    .pg-btn {
+      border: 1px solid #ddd;
+      background: var(--white);
+      border-radius: 6px;
+      padding: 5px 12px;
+      font-size: .8rem;
+      cursor: pointer;
+      transition: all .15s;
+    }
+
+    .pg-btn:hover:not(:disabled) { background: var(--primary); color: var(--white); border-color: var(--primary); }
+    .pg-btn:disabled { opacity: .4; cursor: not-allowed; }
+    .pg-btn.active { background: var(--primary); color: var(--white); border-color: var(--primary); }
+
+    /* Loader / error */
+    .api-loader {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--muted);
+      font-size: .88rem;
+    }
+
+    .api-loader i { font-size: 1.5rem; color: var(--primary); margin-bottom: 8px; display: block; }
+
+    .api-error {
+      text-align: center;
+      padding: 30px 20px;
+      color: #b52020;
+      font-size: .88rem;
+      background: #fff5f5;
+      border-radius: var(--radius);
+      border: 1px solid #ffd0d0;
+    }
+
+    /* Spinner */
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .fa-spin { animation: spin .8s linear infinite; }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      .nc-layout { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 680px) {
+      .sidebar { width: 60px; }
+      .sidebar-logo span, .sidebar-logo small, nav a span { display: none; }
+      .sidebar-logo { justify-content: center; padding: 16px; }
+      nav a { justify-content: center; padding: 14px; }
+      nav a i { width: auto; }
+      .main { margin-left: 60px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Sidebar ── -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <img src="../assets/logo.jpeg" alt="Logo">
+    <span>Zouzoukou<small>Espace Admin</small></span>
+  </div>
+  <nav>
+    <a href="#" class="active" onclick="showSection('nouvelle-commande', this)">
+      <i class="fas fa-plus-circle"></i>
+      <span>Nouvelle commande</span>
+    </a>
+    <a href="#" onclick="showSection('commandes', this)">
+      <i class="fas fa-list-ul"></i>
+      <span>Commandes</span>
+    </a>
+    <a href="#" onclick="showSection('stats', this)">
+      <i class="fas fa-chart-bar"></i>
+      <span>Statistiques</span>
+    </a>
+  </nav>
+</aside>
+
+<!-- ── Main ── -->
+<div class="main">
+
+  <!-- Topbar -->
+  <div class="topbar">
+    <h1 id="topbar-title">Nouvelle commande</h1>
+    <span class="badge-env">CRM</span>
+  </div>
+
+  <div class="content">
+
+    <!-- ════════════════════════════════
+         Section 1 – Nouvelle commande
+    ════════════════════════════════ -->
+    <section class="section active" id="section-nouvelle-commande">
+      <div class="nc-layout">
+
+        <!-- Left: products -->
+        <div>
+          <div class="panel-box" style="margin-bottom:20px;">
+            <h3><i class="fas fa-user"></i> Client</h3>
+            <div class="form-row">
+              <label>Nom complet *</label>
+              <input type="text" id="nc-nom" placeholder="Nom et prénom">
+            </div>
+            <div class="form-row">
+              <label>Téléphone *</label>
+              <input type="tel" id="nc-tel" placeholder="07XXXXXXXX">
+            </div>
+          </div>
+
+          <div class="panel-box">
+            <h3><i class="fas fa-th-large"></i> Produits</h3>
+
+            <div id="prod-loader" class="api-loader">
+              <i class="fas fa-circle-notch fa-spin"></i>
+              Chargement des produits…
+            </div>
+            <div id="prod-error" class="api-error" style="display:none">
+              <i class="fas fa-exclamation-triangle"></i>
+              Impossible de charger les produits.
+            </div>
+            <div class="products-grid" id="products-grid" style="display:none"></div>
+          </div>
+        </div>
+
+        <!-- Right: cart -->
+        <div>
+          <div class="panel-box" style="position:sticky;top:20px;">
+            <h3><i class="fas fa-shopping-basket"></i> Panier</h3>
+
+            <div id="admin-cart-items">
+              <p class="cart-empty">Aucun article ajouté</p>
+            </div>
+
+            <div class="cart-total">
+              <span>Total</span>
+              <span class="total-amount" id="nc-total">0 FCFA</span>
+            </div>
+
+            <button class="btn-submit" id="btn-submit-order" onclick="submitOrder()">
+              <i class="fas fa-check-circle"></i> Enregistrer la commande
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════
+         Section 2 – Commandes
+    ════════════════════════════════ -->
+    <section class="section" id="section-commandes">
+      <div class="page-header">
+        <h2>Liste des commandes</h2>
+        <button class="btn-refresh" onclick="loadCommandes()">
+          <i class="fas fa-sync-alt" id="refresh-icon"></i> Actualiser
+        </button>
+      </div>
+
+      <div id="commandes-loader" class="api-loader">
+        <i class="fas fa-circle-notch fa-spin"></i>
+        Chargement des commandes…
+      </div>
+      <div id="commandes-error" class="api-error" style="display:none">
+        <i class="fas fa-exclamation-triangle"></i>
+        Impossible de charger les commandes.
+      </div>
+
+      <div id="commandes-wrap" style="display:none">
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Client</th>
+                <th>Articles</th>
+                <th>Total</th>
+                <th>Statut</th>
+                <th>Date</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="commandes-tbody"></tbody>
+          </table>
+        </div>
+
+        <div class="pagination">
+          <span id="pagination-info">–</span>
+          <div class="pagination-btns" id="pagination-btns"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════════════════════════════════
+         Section 3 – Statistiques
+    ════════════════════════════════ -->
+    <section class="section" id="section-stats">
+      <div class="stats-header">
+        <h2>Statistiques</h2>
+        <div class="periode-tabs">
+          <button class="periode-tab active" onclick="switchPeriode('week', this)">Cette semaine</button>
+          <button class="periode-tab" onclick="switchPeriode('month', this)">Ce mois</button>
+          <button class="periode-tab" onclick="switchPeriode('year', this)">Cette année</button>
+        </div>
+      </div>
+
+      <div id="stats-loader" class="api-loader">
+        <i class="fas fa-circle-notch fa-spin"></i>
+        Chargement des statistiques…
+      </div>
+      <div id="stats-error" class="api-error" style="display:none">
+        <i class="fas fa-exclamation-triangle"></i>
+        Impossible de charger les statistiques.
+      </div>
+
+      <div id="stats-content" style="display:none">
+        <!-- KPI cards -->
+        <div class="kpi-grid" id="kpi-grid"></div>
+
+        <!-- Middle row: statuts + top produits -->
+        <div class="stats-grid">
+          <div class="panel-box">
+            <h3><i class="fas fa-layer-group"></i> Répartition par statut</h3>
+            <div class="statut-bars" id="statut-bars"></div>
+          </div>
+          <div class="panel-box">
+            <h3><i class="fas fa-trophy"></i> Top produits</h3>
+            <table class="top-table">
+              <thead>
+                <tr>
+                  <th></th>
+                  <th>Produit</th>
+                  <th>Vendus</th>
+                  <th>CA</th>
+                </tr>
+              </thead>
+              <tbody id="top-produits-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Canaux -->
+        <div class="panel-box">
+          <h3><i class="fas fa-broadcast-tower"></i> Performance par canal</h3>
+          <table class="top-table">
+            <thead>
+              <tr>
+                <th>Canal</th>
+                <th>Commandes</th>
+                <th>CA</th>
+                <th>Panier moyen</th>
+                <th>% CA</th>
+              </tr>
+            </thead>
+            <tbody id="top-canaux-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+  const API_BASE = '/API';
+  const KEY_STORAGE = 'zz_admin_key';
+  const API_KEY  = getAdminKey();
+
+  // ── Clé admin (demandée à l'ouverture, gardée pour la session) ──
+
+  function getAdminKey() {
+    let key = '';
+    try { key = sessionStorage.getItem(KEY_STORAGE) || ''; } catch (e) {}
+    if (!key) {
+      key = (prompt('Clé admin :') || '').trim();
+      try { sessionStorage.setItem(KEY_STORAGE, key); } catch (e) {}
+    }
+    return key;
+  }
+
+  async function apiFetch(url, options = {}) {
+    const res = await fetch(url, options);
+    if (res.status === 401) {
+      try { sessionStorage.removeItem(KEY_STORAGE); } catch (e) {}
+      alert('Clé admin invalide.');
+      location.reload();
+    }
+    return res;
+  }
+  const STATUTS  = ['en_attente','confirmee','en_preparation','prete','livree','annulee'];
+  const STATUT_LABELS = {
+    en_attente:     'En attente',
+    confirmee:      'Confirmée',
+    en_preparation: 'En préparation',
+    prete:          'Prête',
+    livree:         'Livrée',
+    annulee:        'Annulée',
+  };
+
+  let adminCart = [];
+  let commandesPage = 1;
+
+  // ── Navigation ──────────────────────────────────────────────
+
+  function showSection(id, link) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('nav a').forEach(a => a.classList.remove('active'));
+    document.getElementById('section-' + id).classList.add('active');
+    link.classList.add('active');
+    document.getElementById('topbar-title').textContent = link.querySelector('span') ? link.querySelector('span').textContent : '';
+
+    if (id === 'commandes') {
+      commandesPage = 1;
+      loadCommandes();
+    }
+    if (id === 'stats') {
+      loadStats();
+    }
+  }
+
+  // ── Toast ────────────────────────────────────────────────────
+
+  function showToast(msg, type = '') {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = 'toast ' + type + ' show';
+    setTimeout(() => t.classList.remove('show'), 3500);
+  }
+
+  // ── Products ─────────────────────────────────────────────────
+
+  async function loadProducts() {
+    try {
+      const res = await apiFetch(`${API_BASE}/produits?actif=true`, {
+        headers: { 'Content-Type': 'application/json', 'X-API-Key': API_KEY }
+      });
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const data = await res.json();
+      renderProducts(data.data || []);
+    } catch (e) {
+      document.getElementById('prod-loader').style.display = 'none';
+      document.getElementById('prod-error').style.display = 'block';
+    }
+  }
+
+  function renderProducts(products) {
+    document.getElementById('prod-loader').style.display = 'none';
+    const grid = document.getElementById('products-grid');
+    grid.style.display = 'grid';
+    grid.innerHTML = products.map(p => `
+      <div class="product-card">
+        <div class="prod-variante">${escHtml(p.variante)}</div>
+        <div class="prod-nom">${escHtml(p.nom)}</div>
+        <div class="prod-desc">${escHtml(p.description || '')}</div>
+        <div class="prod-prix">${parseInt(p.prix_unitaire).toLocaleString('fr-FR')} FCFA</div>
+        <button class="btn-add" onclick="addToAdminCart(${p.id}, '${escAttr(p.nom)}', '${escAttr(p.variante)}', ${parseInt(p.prix_unitaire)})">
+          <i class="fas fa-plus"></i> Ajouter
+        </button>
+      </div>
+    `).join('');
+  }
+
+  // ── Admin Cart ───────────────────────────────────────────────
+
+  function addToAdminCart(id, nom, variante, prix) {
+    const existing = adminCart.find(i => i.id === id);
+    if (existing) { existing.qty++; }
+    else { adminCart.push({ id, nom, variante, prix, qty: 1 }); }
+    renderAdminCart();
+  }
+
+  function changeQty(id, delta) {
+    const item = adminCart.find(i => i.id === id);
+    if (!item) return;
+    item.qty += delta;
+    if (item.qty <= 0) adminCart = adminCart.filter(i => i.id !== id);
+    renderAdminCart();
+  }
+
+  function removeFromCart(id) {
+    adminCart = adminCart.filter(i => i.id !== id);
+    renderAdminCart();
+  }
+
+  function renderAdminCart() {
+    const container = document.getElementById('admin-cart-items');
+    const totalEl   = document.getElementById('nc-total');
+
+    if (adminCart.length === 0) {
+      container.innerHTML = '<p class="cart-empty">Aucun article ajouté</p>';
+      totalEl.textContent = '0 FCFA';
+      return;
+    }
+
+    let total = 0;
+    container.innerHTML = adminCart.map(item => {
+      const sous = item.prix * item.qty;
+      total += sous;
+      return `
+        <div class="cart-item">
+          <div class="ci-name">
+            ${escHtml(item.variante)}
+            <small class="ci-sub">${item.prix.toLocaleString('fr-FR')} FCFA × ${item.qty}</small>
+          </div>
+          <div class="qty-ctrl">
+            <button onclick="changeQty(${item.id}, -1)"><i class="fas fa-minus"></i></button>
+            <span>${item.qty}</span>
+            <button onclick="changeQty(${item.id}, 1)"><i class="fas fa-plus"></i></button>
+          </div>
+          <div class="ci-prix">${sous.toLocaleString('fr-FR')}</div>
+          <button class="ci-remove" onclick="removeFromCart(${item.id})"><i class="fas fa-times"></i></button>
+        </div>
+      `;
+    }).join('');
+
+    totalEl.textContent = total.toLocaleString('fr-FR') + ' FCFA';
+  }
+
+  // ── Submit order ─────────────────────────────────────────────
+
+  async function submitOrder() {
+    const nom = document.getElementById('nc-nom').value.trim();
+    const tel = document.getElementById('nc-tel').value.trim();
+
+    if (!nom) { showToast('Veuillez saisir le nom du client.', 'error'); return; }
+    if (!tel) { showToast('Veuillez saisir le téléphone du client.', 'error'); return; }
+    if (adminCart.length === 0) { showToast('Le panier est vide.', 'error'); return; }
+
+    const btn = document.getElementById('btn-submit-order');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enregistrement…';
+
+    const payload = {
+      client_nom:       nom,
+      client_telephone: tel,
+      client_adresse:   'Abidjan, Cocody',
+      canal_commande:   'crm',
+      mode_paiement:    'Mobile Money',
+      articles: adminCart.map(i => ({
+        produit_id:    i.id,
+        quantite:      i.qty,
+        prix_unitaire: i.prix
+      }))
+    };
+
+    try {
+      const res = await apiFetch(`${API_BASE}/commandes`, {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json', 'X-API-Key': API_KEY },
+        body:    JSON.stringify(payload)
+      });
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      showToast('Commande enregistrée avec succès !', 'success');
+      adminCart = [];
+      renderAdminCart();
+      document.getElementById('nc-nom').value = '';
+      document.getElementById('nc-tel').value = '';
+    } catch (err) {
+      showToast('Erreur lors de l\'enregistrement : ' + err.message, 'error');
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fas fa-check-circle"></i> Enregistrer la commande';
+    }
+  }
+
+  // ── Commandes list ───────────────────────────────────────────
+
+  async function loadCommandes(page = commandesPage) {
+    commandesPage = page;
+
+    document.getElementById('commandes-loader').style.display = 'block';
+    document.getElementById('commandes-error').style.display  = 'none';
+    document.getElementById('commandes-wrap').style.display   = 'none';
+
+    const icon = document.getElementById('refresh-icon');
+    icon.classList.add('fa-spin');
+
+    try {
+      const res = await apiFetch(`${API_BASE}/commandes?page=${page}&limit=10`, {
+        headers: { 'Content-Type': 'application/json', 'X-API-Key': API_KEY }
+      });
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const data = await res.json();
+      renderCommandes(data.data || [], data.pagination || {});
+    } catch (e) {
+      document.getElementById('commandes-loader').style.display = 'none';
+      document.getElementById('commandes-error').style.display  = 'block';
+    } finally {
+      icon.classList.remove('fa-spin');
+    }
+  }
+
+  function renderCommandes(rows, pag) {
+    document.getElementById('commandes-loader').style.display = 'none';
+    document.getElementById('commandes-wrap').style.display   = 'block';
+
+    const tbody = document.getElementById('commandes-tbody');
+
+    if (rows.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:30px">Aucune commande.</td></tr>`;
+    } else {
+      tbody.innerHTML = rows.map(c => `
+        <tr>
+          <td class="td-id">#${c.id}</td>
+          <td>
+            <div class="td-client">${escHtml(c.client_nom)}</div>
+            <div class="td-phone">${escHtml(c.client_telephone)}</div>
+          </td>
+          <td class="td-articles">
+            <small>${escHtml(c.articles_detail || '–')}</small>
+          </td>
+          <td class="td-total">${parseInt(c.total).toLocaleString('fr-FR')} FCFA</td>
+          <td><span class="badge badge-${c.statut}">${STATUT_LABELS[c.statut] || c.statut}</span></td>
+          <td class="td-date">${formatDate(c.date_creation)}</td>
+          <td>
+            <div style="display:flex;gap:6px;align-items:center;">
+              <select class="status-select" id="sel-${c.id}">
+                ${STATUTS.map(s => `<option value="${s}"${s === c.statut ? ' selected' : ''}>${STATUT_LABELS[s]}</option>`).join('')}
+              </select>
+              <button class="btn-update-status" onclick="updateStatut(${c.id})">
+                <i class="fas fa-check"></i>
+              </button>
+            </div>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    // Pagination info
+    const { page = 1, pages = 1, total = 0 } = pag;
+    document.getElementById('pagination-info').textContent =
+      `Page ${page} / ${pages} — ${total} commande${total > 1 ? 's' : ''}`;
+
+    // Pagination buttons
+    const btns = document.getElementById('pagination-btns');
+    btns.innerHTML = '';
+
+    const btn = (label, p, disabled = false, active = false) => {
+      const b = document.createElement('button');
+      b.className = 'pg-btn' + (active ? ' active' : '');
+      b.innerHTML = label;
+      b.disabled  = disabled;
+      b.onclick   = () => loadCommandes(p);
+      return b;
+    };
+
+    btns.appendChild(btn('<i class="fas fa-chevron-left"></i>', page - 1, page <= 1));
+
+    const from = Math.max(1, page - 2);
+    const to   = Math.min(pages, page + 2);
+    for (let i = from; i <= to; i++) {
+      btns.appendChild(btn(i, i, false, i === page));
+    }
+
+    btns.appendChild(btn('<i class="fas fa-chevron-right"></i>', page + 1, page >= pages));
+  }
+
+  async function updateStatut(id) {
+    const sel    = document.getElementById('sel-' + id);
+    const statut = sel.value;
+
+    try {
+      const res = await apiFetch(`${API_BASE}/commandes/${id}/statut`, {
+        method:  'PUT',
+        headers: { 'Content-Type': 'application/json', 'X-API-Key': API_KEY },
+        body:    JSON.stringify({ statut })
+      });
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      showToast('Statut mis à jour : ' + STATUT_LABELS[statut], 'success');
+      loadCommandes();
+    } catch (err) {
+      showToast('Erreur : ' + err.message, 'error');
+    }
+  }
+
+  // ── Stats ────────────────────────────────────────────────────
+
+  let statsPeriode = 'week';
+
+  function switchPeriode(periode, btn) {
+    statsPeriode = periode;
+    document.querySelectorAll('.periode-tab').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    loadStats();
+  }
+
+  async function loadStats() {
+    document.getElementById('stats-loader').style.display  = 'block';
+    document.getElementById('stats-error').style.display   = 'none';
+    document.getElementById('stats-content').style.display = 'none';
+
+    try {
+      const res = await apiFetch(`${API_BASE}/commandes/stats?periode=${statsPeriode}`, {
+        headers: { 'Content-Type': 'application/json', 'X-API-Key': API_KEY }
+      });
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const json = await res.json();
+      renderStats(json.data);
+    } catch (e) {
+      document.getElementById('stats-loader').style.display = 'none';
+      document.getElementById('stats-error').style.display  = 'block';
+    }
+  }
+
+  function renderStats(d) {
+    document.getElementById('stats-loader').style.display  = 'none';
+    document.getElementById('stats-content').style.display = 'block';
+
+    const ca     = parseInt(d.chiffre_affaires)  || 0;
+    const panier = parseInt(d.panier_moyen)       || 0;
+
+    // KPI cards
+    document.getElementById('kpi-grid').innerHTML = `
+      <div class="kpi-card kpi-primary">
+        <div class="kpi-icon"><i class="fas fa-shopping-bag"></i></div>
+        <div class="kpi-label">Commandes</div>
+        <div class="kpi-value">${d.total_commandes}</div>
+      </div>
+      <div class="kpi-card kpi-green">
+        <div class="kpi-icon"><i class="fas fa-coins"></i></div>
+        <div class="kpi-label">Chiffre d'affaires</div>
+        <div class="kpi-value">${ca.toLocaleString('fr-FR')}</div>
+        <div class="kpi-sub">FCFA</div>
+      </div>
+      <div class="kpi-card kpi-blue">
+        <div class="kpi-icon"><i class="fas fa-receipt"></i></div>
+        <div class="kpi-label">Panier moyen</div>
+        <div class="kpi-value">${panier.toLocaleString('fr-FR')}</div>
+        <div class="kpi-sub">FCFA</div>
+      </div>
+      <div class="kpi-card kpi-orange">
+        <div class="kpi-icon"><i class="fas fa-clock"></i></div>
+        <div class="kpi-label">En attente</div>
+        <div class="kpi-value">${d.en_attente || 0}</div>
+      </div>
+      <div class="kpi-card kpi-purple">
+        <div class="kpi-icon"><i class="fas fa-fire"></i></div>
+        <div class="kpi-label">Confirmées</div>
+        <div class="kpi-value">${d.confirmees || 0}</div>
+      </div>
+      <div class="kpi-card kpi-red">
+        <div class="kpi-icon"><i class="fas fa-ban"></i></div>
+        <div class="kpi-label">Annulations</div>
+        <div class="kpi-value">${d.annulations || 0}</div>
+        <div class="kpi-sub">${d.taux_annulation || 0}% taux</div>
+      </div>
+    `;
+
+    // Statut bars
+    const statutData = [
+      { key: 'en_attente',     label: 'En attente',     val: parseInt(d.en_attente)     || 0, color: '#F59E0B' },
+      { key: 'confirmees',     label: 'Confirmées',     val: parseInt(d.confirmees)     || 0, color: '#3B82F6' },
+      { key: 'en_preparation', label: 'En préparation', val: parseInt(d.en_preparation) || 0, color: '#8B5CF6' },
+      { key: 'pretes',         label: 'Prêtes',         val: parseInt(d.pretes)         || 0, color: '#10B981' },
+      { key: 'livrees',        label: 'Livrées',        val: parseInt(d.livrees)        || 0, color: '#059669' },
+      { key: 'annulations',    label: 'Annulées',       val: parseInt(d.annulations)    || 0, color: '#EF4444' },
+    ];
+    const maxStat = Math.max(...statutData.map(s => s.val), 1);
+    document.getElementById('statut-bars').innerHTML = statutData.map(s => `
+      <div class="statut-bar-row">
+        <div class="statut-bar-info">
+          <span class="sb-label">${s.label}</span>
+          <span class="sb-count">${s.val}</span>
+        </div>
+        <div class="bar-track">
+          <div class="bar-fill" style="width:${(s.val / maxStat * 100).toFixed(1)}%;background:${s.color}"></div>
+        </div>
+      </div>
+    `).join('');
+
+    // Top produits
+    const top = d.top_produits || [];
+    document.getElementById('top-produits-tbody').innerHTML = top.length ? top.map((p, i) => `
+      <tr>
+        <td><span class="rank rank-${i+1}">${i+1}</span></td>
+        <td>
+          <div style="font-weight:600;color:var(--dark)">${escHtml(p.nom)}</div>
+          <div style="font-size:.73rem;color:var(--muted)">${escHtml(p.variante)}</div>
+        </td>
+        <td style="font-weight:700">${p.total_vendus}</td>
+        <td style="font-weight:700;color:var(--primary)">${parseInt(p.chiffre_affaires).toLocaleString('fr-FR')} FCFA</td>
+      </tr>
+    `).join('') : `<tr><td colspan="4" style="text-align:center;color:var(--muted);padding:20px">Aucune donnée</td></tr>`;
+
+    // Top canaux
+    const canaux = d.top_canaux || [];
+    document.getElementById('top-canaux-tbody').innerHTML = canaux.length ? canaux.map(c => `
+      <tr>
+        <td style="font-weight:600;text-transform:capitalize">${escHtml(c.canal_commande)}</td>
+        <td>${c.nombre_commandes}</td>
+        <td style="font-weight:700;color:var(--primary)">${parseInt(c.chiffre_affaires).toLocaleString('fr-FR')} FCFA</td>
+        <td>${parseInt(c.panier_moyen).toLocaleString('fr-FR')} FCFA</td>
+        <td>
+          <div style="display:flex;align-items:center;gap:8px">
+            <div class="bar-track" style="flex:1;height:6px">
+              <div class="bar-fill" style="width:${parseFloat(c.pourcentage_ca).toFixed(1)}%;background:var(--primary)"></div>
+            </div>
+            <span style="font-size:.78rem;font-weight:600;white-space:nowrap">${parseFloat(c.pourcentage_ca).toFixed(0)}%</span>
+          </div>
+        </td>
+      </tr>
+    `).join('') : `<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:20px">Aucune donnée</td></tr>`;
+  }
+
+  // ── Helpers ──────────────────────────────────────────────────
+
+  function escHtml(s) {
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  function escAttr(s) {
+    return String(s).replace(/'/g,"\\'");
+  }
+
+  function formatDate(d) {
+    if (!d) return '–';
+    const dt = new Date(d.replace(' ', 'T'));
+    return dt.toLocaleDateString('fr-FR', { day:'2-digit', month:'2-digit', year:'numeric' })
+           + ' ' + dt.toLocaleTimeString('fr-FR', { hour:'2-digit', minute:'2-digit' });
+  }
+
+  // ── Init ─────────────────────────────────────────────────────
+  loadProducts();
+</script>
+</body>
+</html>

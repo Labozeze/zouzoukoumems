@@ -86,6 +86,11 @@ class CommandeController {
             return;
         }
 
+        // Une commande passée depuis le site démarre toujours "en attente"
+        if (!IS_ADMIN) {
+            unset($data['statut']);
+        }
+
         $result = $this->commande->create($data);
         http_response_code(201);
         echo json_encode($result);

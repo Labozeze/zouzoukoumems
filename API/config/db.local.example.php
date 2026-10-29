@@ -7,4 +7,6 @@ return [
     'db_name'  => 'nom_de_la_base',
     'username' => 'utilisateur',
     'password' => 'mot_de_passe',
+    // Clé secrète de la page admin (header X-API-Key). Longue et aléatoire.
+    'admin_key' => 'cle_admin_secrete',
 ];

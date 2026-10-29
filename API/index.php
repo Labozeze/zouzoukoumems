@@ -7,10 +7,30 @@ error_reporting(E_ALL);
 ini_set('display_errors', 0);
 ini_set('log_errors', 1);
 
+header('Content-Type: application/json; charset=UTF-8');
+
+// Router simple
+$uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+$uri = trim(str_replace('/API/', '', $uri), '/');
+$resource = explode('/', $uri)[0];
+$method = $_SERVER['REQUEST_METHOD'];
+
 // Vérification de la clé API (header HTTP : X-API-Key)
+// - clé publique (utilisée par le site) : lister les produits et passer commande
+// - clé admin (secrète, dans config/db.local.php) : toutes les routes
+$config_file = __DIR__ . '/config/db.local.php';
+$config = file_exists($config_file) ? require $config_file : [];
+$admin_key = $config['admin_key'] ?? '';
 $api_key = $_SERVER['HTTP_X_API_KEY'] ?? '';
 
-if ($api_key !== '0123456789') {
+$is_admin = $admin_key !== '' && hash_equals($admin_key, $api_key);
+$is_public = hash_equals('0123456789', $api_key);
+$is_public_route = ($method === 'GET' && $resource === 'produits')
+                || ($method === 'POST' && $uri === 'commandes');
+
+define('IS_ADMIN', $is_admin);
+
+if (!$is_admin && !($is_public && $is_public_route)) {
     http_response_code(401);
     echo json_encode([
         'success' => false,
@@ -18,11 +38,6 @@ if ($api_key !== '0123456789') {
     ]);
     exit();
 }
-
-// Router simple
-$uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-$uri = str_replace('/API/', '', $uri);
-$resource = explode('/', trim($uri, '/'))[0];
 
 try {
     switch ($resource) {

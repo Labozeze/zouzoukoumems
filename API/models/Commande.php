@@ -7,8 +7,38 @@ class Commande {
         $this->conn = $db;
     }
 
+    // Valider les articles et appliquer le prix enregistré en base
+    // (le prix envoyé par le navigateur est ignoré)
+    private function prixDepuisBase($articles) {
+        if (!is_array($articles) || empty($articles)) {
+            throw new Exception("Aucun article");
+        }
+
+        $stmt = $this->conn->prepare("SELECT prix_unitaire FROM produits WHERE id = :id");
+
+        foreach ($articles as &$article) {
+            $quantite = filter_var($article['quantite'] ?? null, FILTER_VALIDATE_INT);
+            if ($quantite === false || $quantite < 1) {
+                throw new Exception("Quantité invalide");
+            }
+
+            $stmt->execute([':id' => $article['produit_id'] ?? 0]);
+            $prix = $stmt->fetchColumn();
+            if ($prix === false) {
+                throw new Exception("Produit inconnu : " . ($article['produit_id'] ?? '?'));
+            }
+
+            $article['quantite'] = $quantite;
+            $article['prix_unitaire'] = $prix;
+        }
+
+        return $articles;
+    }
+
     // Créer une commande
     public function create($data) {
+        $data['articles'] = $this->prixDepuisBase($data['articles']);
+
         try {
             $this->conn->beginTransaction();
 
@@ -244,6 +274,8 @@ class Commande {
 
             // Mettre à jour les articles si fournis
             if (isset($data['articles'])) {
+                $data['articles'] = $this->prixDepuisBase($data['articles']);
+
                 // Supprimer les anciennes lignes
                 $stmtDelete = $this->conn->prepare(
                     "DELETE FROM lignes_commandes WHERE commande_id = :id"
